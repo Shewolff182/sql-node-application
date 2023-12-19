@@ -54,14 +54,14 @@ app.post('/create-language', async(req, res) => {
 });
 
 //delete
-const deleteLanguage = async () => {
+const deleteLanguage = async (id) => {
     await client.connect() //connecting to our database
-    const result = await client.query('DELETE FROM programming_languages WHERE id = $1', [id]);
+    const result = await client.query(`DELETE FROM programming_languages WHERE id = ${id}`)
     console.log(result.rows);
     await client.end() //ending the connection to our database
     return result.rows;
 }
-    app.delete('/delete-language', async (req, res) => {
-    const language = await deleteLanguage();
-    res.send(language);
+app.delete('/delete-language/:id', async (req, res) => {
+    const language = await deleteLanguage(req.params.id);
+    res.send("successfully deleted entry")
 });

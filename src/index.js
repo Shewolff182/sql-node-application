@@ -43,14 +43,19 @@ app.get('/get-language/:id', async (req, res) => {
 //post
 const createLanguage = async (language, releasedYear, githutRank, pyplRank, tiobeRank ) => {
     await client.connect() //connecting to our database
-    const result = await client.query(`INSERT INTO programming_languages (name, released_year, githut_rank, pypl_rank, tiobe_rank) VALUES ('${language}', ${releasedYear}, ${githutRank}, ${pyplRank}, ${tiobeRank})`)
-    console.log(result.rows);
+    const maxIdResult = await client.query('SELECT MAX(id) AS max_id FROM programming_languages');
+    const maxId = maxIdResult.rows[0].max_id || 0; // Handle the case when the table is empty
+    console.log("maxId", maxId);
+    const nextId = maxId + 1;
+    console.log("nextId", nextId);
+    const result = await client.query(`INSERT INTO programming_languages (id, name, released_year, githut_rank, pypl_rank, tiobe_rank) VALUES (${nextId}, '${language}', ${releasedYear}, ${githutRank}, ${pyplRank}, ${tiobeRank})`)
+    console.log("result rows", result.rows);
     await client.end() //ending the connection to our database
     return result.rows;
 }
 app.post('/create-language', async(req, res) => {
     const language = await createLanguage(req.body.language, req.body.releasedYear, req.body.githutRank, req.body.pyplRank, req.body.tiobeRank);
-    res.send(language);
+    res.send(language)
 });
 
 //delete
